@@ -1,0 +1,190 @@
+
+    /* Basic Reset & Body Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden; /* Prevent background scroll */
+    }
+
+    /* Popup Overlay */
+    .popup-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto; /* Scroll if content too tall */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 15px; /* Space around popup */
+        z-index: 1000;
+    }
+
+    /* Login Card - Wider & Scrollable */
+    .popup-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px; /* Wider */
+        padding: 30px 25px;
+        position: relative;
+        max-height: 90vh; /* Fit viewport */
+        overflow-y: auto; /* Scroll inside card */
+    }
+
+    /* Close Button */
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+        color: #333;
+    }
+
+    /* Title */
+    .popup-title {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    /* Flash Messages */
+.flash-messages {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%); /* horizontally center */
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.flash-messages .alert {
+  min-width: 260px;
+  max-width: 420px; /* little wider since it's center */
+  padding: 12px 18px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: translateY(-20px); /* slide from top */
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  text-align: center; /* center align text */
+}
+
+.flash-messages .alert.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flash-messages .alert.hide {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* category colors */
+.alert-success { background: #28a745; }
+.alert-danger  { background: #dc3545; }
+.alert-warning { background: #ffc107; color:#000; }
+.alert-info    { background: #17a2b8; }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        background-color: #0056b3;
+    }
+
+    /* Footer Link */
+    .popup-footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #666;
+    }
+
+    .popup-footer a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .popup-footer a:hover {
+        text-decoration: underline;
+    }
+
+    /* Go Back Button */
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 15px;
+        width: 100%;
+        font-size: 15px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background-color: #5a6268;
+    }

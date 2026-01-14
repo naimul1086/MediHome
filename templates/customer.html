@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Page</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <style>
+        /* Chat button */
+        #chatBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        /* Chat window */
+        #chatWindow {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #aaa;
+            flex-direction: column;
+        }
+
+        #chatHeader {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chatMessages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #chatInput {
+            display: flex;
+        }
+
+        #chatInput input {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+
+        #chatInput button {
+            padding: 8px 12px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ user_name }}</h1>
+
+    <button id="chatBtn">Chat with Admin</button>
+
+    <div id="chatWindow">
+        <div id="chatHeader">
+            <span>Chat with Admin</span>
+            <button id="closeChat" style="background:red;color:white;border:none;">X</button>
+        </div>
+        <div id="chatMessages"></div>
+        <div id="chatInput">
+            <input type="text" id="message" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+   // CUSTOMER LIVE CHAT
+const uid = "{{ session['user_id'] }}";
+const uname = "{{ session['user_name'] }}";
+
+const liveChatBtn = document.getElementById('liveChatBtn');
+const chatWindow = document.getElementById('chatWindow');
+const closeChat = document.getElementById('closeChat');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const chatMessages = document.getElementById('chatMessages');
+
+if(!uid){
+    liveChatBtn.onclick = () => alert("Please login to use Live Chat!");
+} else {
+    const socket = io();
+
+    // Join room
+    socket.emit("join", { user_id: uid });
+
+    liveChatBtn.onclick = () => chatWindow.style.display = "flex";
+    closeChat.onclick = () => chatWindow.style.display = "none";
+
+    // Send message
+    sendBtn.onclick = sendMessage;
+    messageInput.addEventListener("keydown", e => { if(e.key==="Enter") sendMessage(); });
+
+    function sendMessage(){
+        const msg = messageInput.value.trim();
+        if(!msg) return;
+
+        // append locally first
+        appendMessage("Me", msg);
+
+        // emit to admin only
+        socket.emit("send_message", {
+            sender_id: uid,
+            sender_name: uname,
+            receiver: 'admin',
+            message: msg
+        });
+
+        messageInput.value = "";
+    }
+
+    // Receive messages from admin only
+    socket.on("receive_message", data => {
+        if(data.sender_id === 0 && data.receiver == uid){ // admin → this user
+            appendMessage(data.sender_name, data.message);
+        }
+    });
+
+    function appendMessage(name, msg){
+        const div = document.createElement("div");
+        div.className = "message " + (name==="Me"?"me":"other");
+        div.innerHTML = `<b>${name}:</b> ${msg}`;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+
+    </script>
+</body>
+</html>

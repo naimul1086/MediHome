@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Live Chat</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <style>
+        body{margin:0;font-family:sans-serif;background:#f0f2f5}
+        .chat-container{display:flex;height:90vh;max-width:1200px;margin:20px auto;border-radius:12px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.2);}
+        .customer-list{width:250px;background:#fff;border-right:1px solid #ccc;overflow-y:auto;}
+        .customer-list div{padding:12px;cursor:pointer;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+        .customer-list div:hover{background:#f0f0f0;}
+        .chat-window{flex:1;display:flex;flex-direction:column;background:#e5ddd5;}
+        .chat-header{background:#075e54;color:white;padding:14px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;}
+        .chat-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;}
+        .chat-body .message{margin:6px 0;padding:8px 12px;border-radius:12px;max-width:70%;word-wrap:break-word;}
+        .chat-body .me{background:#dcf8c6;align-self:flex-end;}
+        .chat-body .other{background:white;align-self:flex-start;}
+        .chat-footer{display:flex;padding:8px;border-top:1px solid #ccc;background:#f0f0f0;}
+        .chat-footer input{flex:1;padding:10px;border:none;border-radius:20px;outline:none;}
+        .chat-footer button{padding:0 20px;margin-left:8px;border:none;border-radius:20px;background:#075e54;color:white;cursor:pointer;}
+        .unread-badge{background:red;color:white;padding:2px 6px;border-radius:12px;font-size:12px;}
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="customer-list" id="customerList">
+        <!-- Customer list populate -->
+    </div>
+    <div class="chat-window">
+        <div class="chat-header">
+            <span id="chatHeader">Select Customer</span>
+            <button id="closeChat" style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">
+    Close
+</button>
+
+        </div>
+        <div class="chat-body" id="chatMessages"></div>
+        <div class="chat-footer">
+            <input id="messageInput" placeholder="Type a message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ---------- ADMIN LIVE CHAT ----------
+const chatMessages = document.getElementById('chatMessages');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const closeChat = document.getElementById('closeChat');
+const previousUrl = "{{ previous_url }}";
+
+closeChat.onclick = () => {
+    window.location.href = previousUrl; // back to previous page
+};
+
+const admin_name = "{{ admin_name }}";
+let selectedCustomerId = null;
+
+const socket = io();
+socket.emit("join", {}); // join admin room
+
+// Sidebar: load customers
+function loadCustomers(){
+    fetch("/admin/chat/customers")
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById("customerList");
+            list.innerHTML = "";
+            if(data.length===0){
+                list.innerHTML = "<div>No customers yet</div>";
+            }
+            data.forEach(c => {
+                const div = document.createElement("div");
+                div.innerHTML = `<span>${c.sender_name}</span>` + 
+                                (c.unread_count>0 ? `<span class="unread-badge">${c.unread_count}</span>` : "");
+                div.onclick = () => selectCustomer(c.sender_id, c.sender_name);
+                list.appendChild(div);
+            });
+        })
+        .catch(err => console.error(err));
+}
+
+// Select customer
+function selectCustomer(id, name){
+    selectedCustomerId = id;
+    document.getElementById('chatHeader').textContent = name;
+    loadMessages(id);
+}
+
+// Load messages for customer
+function loadMessages(customerId){
+    fetch(`/admin/chat/messages/${customerId}`)
+        .then(res => res.json())
+        .then(data => {
+            chatMessages.innerHTML = "";
+            data.forEach(m => {
+                const div = document.createElement("div");
+                div.className = "message " + (m.sender_id===0 ? "me" : "other");
+                div.textContent = m.message;
+                chatMessages.appendChild(div);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        })
+        .catch(err => console.error(err));
+}
+
+// Send admin message
+sendBtn.onclick = sendMessage;
+messageInput.addEventListener("keydown", e => { if(e.key==="Enter") sendMessage(); });
+
+function sendMessage(){
+    if(!selectedCustomerId) return alert("Select a customer first!");
+    const msg = messageInput.value.trim();
+    if(!msg) return;
+
+    socket.emit("send_message", {
+        sender_id: 0,
+        sender_name: admin_name,
+        receiver: selectedCustomerId,
+        message: msg
+    });
+
+    appendMessage("Me", msg);
+    messageInput.value = "";
+}
+
+// Append message
+function appendMessage(name, msg){
+    const div = document.createElement("div");
+    div.className = "message " + (name==="Me" ? "me" : "other");
+    div.textContent = msg;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Receive real-time
+socket.on("receive_message", data => {
+    // Show if this message belongs to selected customer
+    if(selectedCustomerId && (data.sender_id===0 && data.receiver===selectedCustomerId) || 
+       (data.sender_id===selectedCustomerId && data.receiver==='admin')){
+        appendMessage(data.sender_name, data.message);
+    }
+});
+
+
+// Initial load
+loadCustomers();
+setInterval(loadCustomers, 5000);
+ // refresh every 5 sec
+</script>
+
+</body>
+</html>

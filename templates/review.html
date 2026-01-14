@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit Review</title>
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: Arial, sans-serif;
+    }
+
+    .review-container {
+      max-width: 600px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    /* ⭐ STAR RATING SYSTEM */
+    .star-rating {
+      direction: rtl;
+      display: inline-flex;
+      font-size: 28px;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      color: #ccc;
+      cursor: pointer;
+      padding: 0 3px;
+      transition: color 0.2s;
+    }
+
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      color: #f5b301;
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .btn-submit {
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background: #0056b3;
+    }
+
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      line-height: 42px;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+    }
+
+    /* Flash messages */
+    .alert {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+
+<div class="review-container">
+  <h2>Submit Review</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form action="{{ url_for('submit_review') }}" method="POST">
+
+    <div class="form-group">
+      <label>Select Medicine</label>
+      <select name="medicine_id" required>
+        <option value="">Select medicine</option>
+        {% for medicine in user_medicines %}
+          <option value="{{ medicine.id }}">{{ medicine.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Rating</label>
+      <div class="star-rating">
+        <input type="radio" id="star5" name="rating" value="5" required>
+        <label for="star5"><i class="fas fa-star"></i></label>
+
+        <input type="radio" id="star4" name="rating" value="4">
+        <label for="star4"><i class="fas fa-star"></i></label>
+
+        <input type="radio" id="star3" name="rating" value="3">
+        <label for="star3"><i class="fas fa-star"></i></label>
+
+        <input type="radio" id="star2" name="rating" value="2">
+        <label for="star2"><i class="fas fa-star"></i></label>
+
+        <input type="radio" id="star1" name="rating" value="1">
+        <label for="star1"><i class="fas fa-star"></i></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Your Review</label>
+      <textarea name="reviewText" rows="4" required></textarea>
+    </div>
+
+    <div class="btn-group">
+      <button type="submit" class="btn btn-submit">Submit Review</button>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-cancel">Cancel</a>
+    </div>
+
+  </form>
+</div>
+
+</body>
+</html>
