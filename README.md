@@ -1,33 +1,33 @@
 Medihome – An Online Based Pharmacy
-
 📖 Project Description
 
 Medihome is a web-based online pharmacy management system that allows users to browse medicines, upload prescriptions, place orders, and communicate with administrators in real time.
-The system also includes email verification using SMTP and live chat support using Socket.IO, making it closer to a real-world pharmacy platform.
+
+The system includes email verification using SMTP and live chat support using Socket.IO, making it suitable for a real-world online pharmacy scenario.
 
 This project is developed using Flask (Python) as the backend framework and HTML, CSS, and JavaScript for the frontend.
 
 ✨ Key Features
 
-1.User Registration & Login
+User Registration & Login
 
-2.Email Verification using SMTP
+Email Verification using SMTP
 
-3.Medicine Browsing & Details Page
+Medicine Browsing & Details Page
 
-4.Cart & Checkout System
+Cart & Checkout System
 
-5.Order Confirmation & Invoice
+Order Confirmation & Invoice
 
-6.Prescription Upload System
+Prescription Upload System
 
-7.User Dashboard & Admin Dashboard
+User Dashboard & Admin Dashboard
 
-8.Live Chat Support (Socket.IO)
+Live Chat Support (Socket.IO)
 
-9.Review & Feedback System
+Review & Feedback System
 
-10.Responsive Web Design
+Responsive Web Design
 
 🛠️ Technologies Used
 
@@ -44,7 +44,7 @@ Database: MySQL
 Template Engine: Jinja2
 
 📂 Project Folder Structure
-SD3 FINAL/
+MediHome/
 │
 ├── static/
 │   ├── css/                # All CSS files
@@ -88,48 +88,38 @@ MySQL Server
 pip (Python Package Manager)
 
 🚀 Steps to Run
+1. Clone the Repository
+git clone https://github.com/naimul1086/MediHome.git
 
-1.Clone the Repository
+2. Go to Project Folder
+cd MediHome
 
-git clone https://github.com/naimul1086/medihome.git
-
-
-2.Go to Project Folder
-
-cd "Medihome"
-
-
-3.Install Required Packages
-
+3. Install Required Packages
 pip install flask flask-socketio flask-mail mysql-connector-python
 
-
-4.Configure Database
+4. Configure Database
 
 Create a MySQL database
 
 Update database credentials inside app.py
 
-Configure SMTP Email
+5. Configure SMTP Email
 
 Set your email and password in app.py
 
 Enable App Password / SMTP access
 
-Run the Application
+6. Run the Application
+python app.py
 
-Type in yout terminal : python app.py
-
-
-Open Browser
-
+7. Open in Browser
 http://127.0.0.1:5000/
 
 📧 Email Verification System
 
 Uses SMTP to send verification emails
 
-Users must verify email before accessing full features
+Users must verify their email before accessing full features
 
 💬 Live Chat Support
 
